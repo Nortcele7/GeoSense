@@ -13,7 +13,7 @@ df = load_data()
 # Load pipeline model (transformer + regressor)
 @st.cache_resource
 def load_model():
-    return joblib.load("model.pkl")
+    return joblib.load("model1.pkl")
 
 model = load_model()
 
