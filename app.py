@@ -1,78 +1,136 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
+import requests
+import joblib
 
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.compose import ColumnTransformer
+# Load dataset for dynamic dropdowns and input ranges
+@st.cache_data
+def load_data():
+    return pd.read_csv("synthetic_soil_bearing_capacity.csv")
 
-# ---------------- LOAD DATA ----------------
-df = pd.read_csv("synthetic_soil_bearing_capacity.csv")
+df = load_data()
 
-# ---------------- MODEL TRAINING ----------------
-X = df.drop(columns=['bearing_capacity', 'safety_class'])
-y = df['bearing_capacity']
+# Load pipeline model (transformer + regressor)
+@st.cache_resource
+def load_model():
+    return joblib.load("model1.pkl")
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
+model = load_model()
 
-transformer = ColumnTransformer(
-    transformers=[
-        ('tnf', OneHotEncoder(sparse_output=False, drop='first'),
-         ['soil_type', 'grain_size'])
-    ],
-    remainder='passthrough'
-)
+API_URL = "http://localhost:8000/predict"
 
-X_train_new = transformer.fit_transform(X_train)
+# Safety classification logic
+def get_safety_class(value):
+    if value < 100:
+        return "Unsafe"
+    elif value < 200:
+        return "Moderate"
+    else:
+        return "Safe"
 
-lr = LinearRegression()
-lr.fit(X_train_new, y_train)
+def get_message(safety):
+    if safety == "Safe":
+        return "✅ Structure condition is SAFE for design."
+    elif safety == "Moderate":
+        return "⚠ Moderate capacity – consider improvement."
+    else:
+        return "❌ Unsafe – redesign or ground improvement required."
 
-# ---------------- STREAMLIT UI ----------------
-
+# Streamlit UI
+st.set_page_config(page_title="Soil Bearing Capacity Predictor")
 st.title("Soil Bearing Capacity Prediction")
 
-soil_type = st.selectbox("Soil Type", df['soil_type'].unique())
-grain_size = st.selectbox("Grain Size", df['grain_size'].unique())
+st.write("""
+Enter soil parameters below to estimate **bearing capacity**  
+and automatically obtain the **safety class**.
+""")
 
-moisture = st.number_input(
-    "Moisture Content",
+# Dynamic dropdown options from dataset
+soil_type_options = list(df['soil_type'].unique())
+grain_size_options = list(df['grain_size'].unique())
+
+soil_type = st.selectbox("Soil Type", soil_type_options)
+grain_size = st.selectbox("Grain Size", grain_size_options)
+
+moisture_content = st.slider(
+    "Moisture Content (%)",
     float(df['moisture_content'].min()),
-    float(df['moisture_content'].max())
+    float(df['moisture_content'].max()),
+    float(df['moisture_content'].median()),
+    step=0.1
 )
 
-depth = st.number_input(
-    "Foundation Depth",
+foundation_depth = st.number_input(
+    "Foundation Depth (m)",
     float(df['foundation_depth'].min()),
-    float(df['foundation_depth'].max())
+    float(df['foundation_depth'].max()),
+    float(df['foundation_depth'].median()),
+    step=0.1
 )
 
 bulk_density = st.number_input(
-    "Bulk Density",
+    "Bulk Density (g/cm³)",
     float(df['bulk_density'].min()),
-    float(df['bulk_density'].max())
+    float(df['bulk_density'].max()),
+    float(df['bulk_density'].median()),
+    step=0.01
 )
 
-field_score = st.number_input(
+field_observation_score = st.number_input(
     "Field Observation Score",
     float(df['field_observation_score'].min()),
-    float(df['field_observation_score'].max())
+    float(df['field_observation_score'].max()),
+    float(df['field_observation_score'].median()),
+    step=0.1
 )
 
+# Prepare input in the exact order your pipeline expects
 input_data = pd.DataFrame({
     'soil_type': [soil_type],
     'grain_size': [grain_size],
-    'moisture_content': [moisture],
-    'foundation_depth': [depth],
+    'moisture_content': [moisture_content],
+    'foundation_depth': [foundation_depth],
     'bulk_density': [bulk_density],
-    'field_observation_score': [field_score]
+    'field_observation_score': [field_observation_score]
 })
 
-input_transformed = transformer.transform(input_data)
 
 if st.button("Predict Bearing Capacity"):
-    result = lr.predict(input_transformed)
-    st.success(f"Predicted Bearing Capacity: {result[0]:.2f}")
+
+    payload = {
+        "soil_type": soil_type,
+        "grain_size_type": grain_size,              # MATCH API
+        "moisture_content": moisture_content,
+        "bulk_density": bulk_density,
+        "foundation_depth": foundation_depth,
+        "field_score": field_observation_score      # MATCH API
+    }
+
+    response = requests.post(API_URL, json=payload)
+
+    if response.status_code == 200:
+
+        result = response.json()
+        prediction = result["Prediction"]
+
+        safety = get_safety_class(prediction)
+
+        st.subheader("Results")
+        st.metric("Predicted Bearing Capacity (kPa)", f"{prediction:.2f}")
+
+        if safety == "Safe":
+            st.success(f"Safety Class: {safety}")
+        elif safety == "Moderate":
+            st.warning(f"Safety Class: {safety}")
+        else:
+            st.error(f"Safety Class: {safety}")
+
+        st.write(get_message(safety))
+
+    else:
+        st.error("Prediction API failed")
+
+
+st.markdown("---")
+st.caption("ML-Based Bearing Capacity & Safety Classification System")
