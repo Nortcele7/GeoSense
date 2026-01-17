@@ -28,5 +28,4 @@ def predict(data: Soil):
     })
 
     prediction = model.predict(df)[0]
-
     return {"Prediction": float(prediction)}
