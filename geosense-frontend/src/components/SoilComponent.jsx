@@ -555,7 +555,7 @@ const SoilForm = () => {
               <div style={{ flex: "1" }}>
                 <h3 style={{
                   margin: "0 0 6px 0",
-                  color: "#33691E",
+                  color: safetyColors[prediction.safety],
                   fontSize: "20px",
                   fontWeight: "700",
                   letterSpacing: "-0.3px"
@@ -564,7 +564,7 @@ const SoilForm = () => {
                 </h3>
                 <p style={{
                   margin: "0",
-                  color: "#689F38",
+                  color: safetyColors[prediction.safety],
                   fontSize: "13px",
                   fontWeight: "500",
                   textTransform: "uppercase",
@@ -584,7 +584,7 @@ const SoilForm = () => {
               <span style={{
                 fontSize: "48px",
                 fontWeight: "800",
-                color: "#33691E",
+                color: safetyColors[prediction.safety],
                 lineHeight: "1",
                 letterSpacing: "-1px"
               }}>
@@ -593,7 +593,7 @@ const SoilForm = () => {
               <span style={{
                 fontSize: "20px",
                 fontWeight: "600",
-                color: "#689F38",
+                color: safetyColors[prediction.safety],
                 marginBottom: "4px"
               }}>
                 kN/m²
