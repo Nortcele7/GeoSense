@@ -2,7 +2,7 @@ soil_type,moisture_content,bulk_density,grain_size,foundation_depth,field_observ
 Sand,28.35,16.97,Fine,1.72,3,237.45,Safe
 Sand,28.42,14.61,Coarse,1.98,4,231.42,Safe
 Gravel,6.18,20.01,Coarse,2.05,3,400.0,Safe
-Silt,9.35,14.2,Fine,1.27,4,131.96,Moderate
+Silt,9.35,14.2,Fine,1.27,4,131.96,Moderate 
 Sand,30.75,19.53,Medium,1.6,5,235.48,Safe
 Silt,11.08,20.68,Coarse,1.92,3,313.32,Safe
 Clay,12.05,17.54,Medium,1.6,2,121.13,Moderate
