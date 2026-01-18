@@ -29,7 +29,7 @@ const SoilForm = () => {
       moisture_content: Number(formData.moisture_content),
       bulk_density: Number(formData.bulk_density),
       foundation_depth: Number(formData.foundation_depth),
-      field_score: Number(formData.field_score),
+      field_score: formData.field_score,
       soil_type: formData.soil_type,
       grain_size_type: formData.grain_size_type,
     };
@@ -41,7 +41,6 @@ const SoilForm = () => {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      // Only take prediction value and safety class
       setPrediction({
         value: response.data.Prediction,
         safety: response.data.SafetyClass,
@@ -58,243 +57,716 @@ const SoilForm = () => {
     }
   };
 
+  const safetyColors = {
+    Safe: "#4CAF50", // Rich green
+    Moderate: "#FF9800", // Warm orange
+    Unsafe: "#F44336", // Alert red
+  };
+
+  const safetyIcons = {
+    Safe: "✓",
+    Moderate: "⚠",
+    Unsafe: "✗"
+  };
+
   return (
-    <div className="soil-form-container">
-      <div className="soil-form-card">
-        <div className="soil-form-header">
-          <div className="soil-icon">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-            </svg>
+    <div style={{
+      minHeight: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      background: "linear-gradient(135deg, #8BC34A 0%, #CDDC39 50%, #FFEB3B 100%)",
+      padding: "20px",
+      fontFamily: "'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif"
+    }}>
+      <div style={{
+        background: "#FFFFFF",
+        padding: "40px",
+        borderRadius: "24px",
+        maxWidth: "720px",
+        width: "100%",
+        boxShadow: "0 25px 60px rgba(0,0,0,0.12)",
+        border: "1px solid rgba(255,255,255,0.2)",
+        backdropFilter: "blur(10px)"
+      }}>
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: "32px" }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "16px",
+            marginBottom: "12px"
+          }}>
+            <div style={{
+              width: "48px",
+              height: "48px",
+              background: "linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%)",
+              borderRadius: "12px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "white",
+              fontSize: "22px",
+              fontWeight: "800",
+              boxShadow: "0 6px 20px rgba(76, 175, 80, 0.3)"
+            }}>
+              GS
+            </div>
+            <div>
+              <h1 style={{
+                margin: "0",
+                fontSize: "32px",
+                fontWeight: "800",
+                background: "linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                letterSpacing: "-0.5px",
+                lineHeight: "1.2"
+              }}>
+                GeoSense AI
+              </h1>
+              <p style={{
+                margin: "4px 0 0 0",
+                color: "#689F38",
+                fontSize: "13px",
+                fontWeight: "600",
+                letterSpacing: "1.5px",
+                textTransform: "uppercase"
+              }}>
+                Advanced Soil Strength Prediction
+              </p>
+            </div>
           </div>
-          <h2 className="soil-form-title">Soil Strength Predictor</h2>
-          <p className="soil-form-subtitle">
-            Enter soil properties to predict strength
-          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="soil-form">
-          <div className="form-grid">
-            <div className="form-group">
-              <label className="form-label">
-                <span className="label-text">Moisture Content</span>
-                <span className="label-unit">(%)</span>
-              </label>
-              <input
-                type="number"
-                name="moisture_content"
-                value={formData.moisture_content}
-                onChange={handleChange}
-                required
-                step="any"
-                className="form-input"
-                placeholder="e.g., 15.5"
-              />
-            </div>
+        {/* Form Grid */}
+        <form onSubmit={handleSubmit}>
+  <div style={{
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "24px",
+    marginBottom: "32px"
+  }}>
+    {/* Column 1 */}
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      {/* Soil Type */}
+      <div>
+        <label style={{
+          color: "#33691E",
+          fontSize: "13px",
+          fontWeight: "600",
+          textTransform: "uppercase",
+          letterSpacing: "1px",
+          marginBottom: "8px",
+          display: "block",
+          alignItems: "center",
+          gap: "6px"
+        }}>
+          <span>🌱</span>
+          SOIL TYPE
+        </label>
+        <select
+          name="soil_type"
+          value={formData.soil_type}
+          onChange={handleChange}
+          style={{
+            width: "100%",
+            padding: "15px 16px",
+            borderRadius: "12px",
+            border: "2px solid #DCEDC8",
+            fontSize: "15px",
+            color: "#33691E",
+            background: "#F9FBE7",
+            appearance: "none",
+            backgroundImage: "url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%234CAF50\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"%3e%3cpolyline points=\"6 9 12 15 18 9\"%3e%3c/polyline%3e%3c/svg%3e')",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "right 16px center",
+            backgroundSize: "16px",
+            fontWeight: "500",
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+            cursor: "pointer"
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = "#4CAF50";
+            e.target.style.boxShadow = "0 0 0 3px rgba(76, 175, 80, 0.1)";
+            e.target.style.background = "#FFFFFF";
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = "#DCEDC8";
+            e.target.style.boxShadow = "none";
+            e.target.style.background = "#F9FBE7";
+          }}
+        >
+          <option style={{ background: "#FFFFFF", color: "#33691E", padding: "8px" }}>Sand</option>
+          <option style={{ background: "#FFFFFF", color: "#33691E", padding: "8px" }}>Clay</option>
+          <option style={{ background: "#FFFFFF", color: "#33691E", padding: "8px" }}>Silt</option>
+          <option style={{ background: "#FFFFFF", color: "#33691E", padding: "8px" }}>Gravel</option>
+        </select>
+      </div>
 
-            <div className="form-group">
-              <label className="form-label">
-                <span className="label-text">Bulk Density</span>
-                <span className="label-unit">(g/cm³)</span>
-              </label>
-              <input
-                type="number"
-                name="bulk_density"
-                value={formData.bulk_density}
-                onChange={handleChange}
-                required
-                step="any"
-                className="form-input"
-                placeholder="e.g., 1.65"
-              />
-            </div>
+      {/* Moisture Content */}
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+          <label style={{
+            color: "#33691E",
+            fontSize: "13px",
+            fontWeight: "600",
+            textTransform: "uppercase",
+            letterSpacing: "1px",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px"
+          }}>
+            <span>💧</span>
+            MOISTURE CONTENT
+          </label>
+          <span style={{ color: "#8BC34A", fontSize: "11px", fontWeight: "500" }}>(%)</span>
+        </div>
+        <input
+          type="number"
+          name="moisture_content"
+          value={formData.moisture_content}
+          onChange={handleChange}
+          required
+          step="any"
+          placeholder="15.5"
+          style={{
+            width: "90%",
+            padding: "15px 16px",
+            borderRadius: "12px",
+            border: "2px solid #DCEDC8",
+            fontSize: "15px",
+            color: "#33691E",
+            background: "#F9FBE7",
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+            fontWeight: "500"
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = "#4CAF50";
+            e.target.style.boxShadow = "0 0 0 3px rgba(76, 175, 80, 0.1)";
+            e.target.style.background = "#FFFFFF";
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = "#DCEDC8";
+            e.target.style.boxShadow = "none";
+            e.target.style.background = "#F9FBE7";
+          }}
+        />
+      </div>
+    </div>
 
-            <div className="form-group">
-              <label className="form-label">
-                <span className="label-text">Foundation Depth</span>
-                <span className="label-unit">(m)</span>
-              </label>
-              <input
-                type="number"
-                name="foundation_depth"
-                value={formData.foundation_depth}
-                onChange={handleChange}
-                required
-                step="any"
-                className="form-input"
-                placeholder="e.g., 2.5"
-              />
-            </div>
+    {/* Column 2 */}
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      {/* Grain Size */}
+      <div>
+        <label style={{
+          color: "#33691E",
+          fontSize: "13px",
+          fontWeight: "600",
+          textTransform: "uppercase",
+          letterSpacing: "1px",
+          marginBottom: "8px",
+          display: "flex",
+          alignItems: "center",
+          gap: "6px"
+        }}>
+          <span>🔬</span>
+          GRAIN SIZE
+        </label>
+        <select
+          name="grain_size_type"
+          value={formData.grain_size_type}
+          onChange={handleChange}
+          style={{
+            width: "100%",
+            padding: "15px 16px",
+            borderRadius: "12px",
+            border: "2px solid #DCEDC8",
+            fontSize: "15px",
+            color: "#33691E",
+            background: "#F9FBE7",
+            appearance: "none",
+            backgroundImage: "url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%234CAF50\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"%3e%3cpolyline points=\"6 9 12 15 18 9\"%3e%3c/polyline%3e%3c/svg%3e')",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "right 16px center",
+            backgroundSize: "16px",
+            fontWeight: "500",
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+            cursor: "pointer"
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = "#4CAF50";
+            e.target.style.boxShadow = "0 0 0 3px rgba(76, 175, 80, 0.1)";
+            e.target.style.background = "#FFFFFF";
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = "#DCEDC8";
+            e.target.style.boxShadow = "none";
+            e.target.style.background = "#F9FBE7";
+          }}
+        >
+          <option style={{ background: "#FFFFFF", color: "#33691E", padding: "8px" }}>Fine</option>
+          <option style={{ background: "#FFFFFF", color: "#33691E", padding: "8px" }}>Medium</option>
+          <option style={{ background: "#FFFFFF", color: "#33691E", padding: "8px" }}>Coarse</option>
+        </select>
+      </div>
 
-            <div className="form-group">
-              <label className="form-label">
-                <span className="label-text">Field Score</span>
-                <span className="label-unit">(1-5)</span>
-              </label>
-              <input
-                type="number"
-                name="field_score"
-                value={formData.field_score}
-                onChange={handleChange}
-                required
-                min="1"
-                max="5"
-                step="any"
-                className="form-input"
-                placeholder="e.g., 5"
-              />
-            </div>
+      {/* Bulk Density */}
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+          <label style={{
+            color: "#33691E",
+            fontSize: "13px",
+            fontWeight: "600",
+            textTransform: "uppercase",
+            letterSpacing: "1px",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px"
+          }}>
+            <span>⚖️</span>
+            BULK DENSITY
+          </label>
+          <span style={{ color: "#8BC34A", fontSize: "11px", fontWeight: "500" }}>(g/cm³)</span>
+        </div>
+        <input
+          type="number"
+          name="bulk_density"
+          value={formData.bulk_density}
+          onChange={handleChange}
+          required
+          step="any"
+          placeholder="1.65"
+          style={{
+            width: "90%",
+            padding: "15px 16px",
+            borderRadius: "12px",
+            border: "2px solid #DCEDC8",
+            fontSize: "15px",
+            color: "#33691E",
+            background: "#F9FBE7",
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+            fontWeight: "500"
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = "#4CAF50";
+            e.target.style.boxShadow = "0 0 0 3px rgba(76, 175, 80, 0.1)";
+            e.target.style.background = "#FFFFFF";
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = "#DCEDC8";
+            e.target.style.boxShadow = "none";
+            e.target.style.background = "#F9FBE7";
+          }}
+        />
+      </div>
+    </div>
 
-            <div className="form-group full-width">
-              <label className="form-label">Soil Type</label>
-              <select
-                name="soil_type"
-                value={formData.soil_type}
-                onChange={handleChange}
-                className="form-input"
-              >
-                <option>Sand</option>
-                <option>Clay</option>
-                <option>Silt</option>
-                <option>Gravel</option>
-              </select>
-            </div>
+    {/* Full-width inputs */}
+    <div style={{ gridColumn: "span 2", display: "flex", flexDirection: "column", gap: "20px" }}>
+      {/* Foundation Depth */}
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+          <label style={{
+            color: "#33691E",
+            fontSize: "13px",
+            fontWeight: "600",
+            textTransform: "uppercase",
+            letterSpacing: "1px",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px"
+          }}>
+            <span>⛏️</span>
+            FOUNDATION DEPTH
+          </label>
+          <span style={{ color: "#8BC34A", fontSize: "11px", fontWeight: "500" }}>(m)</span>
+        </div>
+        <input
+          type="number"
+          name="foundation_depth"
+          value={formData.foundation_depth}
+          onChange={handleChange}
+          required
+          step="any"
+          placeholder="2.5"
+          style={{
+            width: "100%",
+            padding: "15px 16px",
+            borderRadius: "12px",
+            border: "2px solid #DCEDC8",
+            fontSize: "15px",
+            color: "#33691E",
+            background: "#F9FBE7",
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+            fontWeight: "500"
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = "#4CAF50";
+            e.target.style.boxShadow = "0 0 0 3px rgba(76, 175, 80, 0.1)";
+            e.target.style.background = "#FFFFFF";
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = "#DCEDC8";
+            e.target.style.boxShadow = "none";
+            e.target.style.background = "#F9FBE7";
+          }}
+        />
+      </div>
 
-            <div className="form-group full-width">
-              <label className="form-label">Grain Size Type</label>
-              <select
-                name="grain_size_type"
-                value={formData.grain_size_type}
-                onChange={handleChange}
-                className="form-input"
-              >
-                <option>Fine</option>
-                <option>Medium</option>
-                <option>Coarse</option>
-              </select>
-            </div>
-          </div>
+      {/* Field Observation */}
+      <div>
+        <label style={{
+          color: "#33691E",
+          fontSize: "13px",
+          fontWeight: "600",
+          textTransform: "uppercase",
+          letterSpacing: "1px",
+          marginBottom: "8px",
+          display: "block",
+          alignItems: "center",
+          gap: "6px"
+        }}>
+          <span>📝</span>
+          FIELD OBSERVATION
+        </label>
+        <textarea
+          name="field_score"
+          value={formData.field_score}
+          onChange={handleChange}
+          required
+          rows="4"
+          placeholder="Describe soil condition (color, texture, consistency, moisture appearance...)"
+          style={{
+            width: "100%",
+            padding: "15px 16px",
+            borderRadius: "12px",
+            border: "2px solid #DCEDC8",
+            fontSize: "15px",
+            color: "#33691E",
+            background: "#F9FBE7",
+            resize: "vertical",
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+            minHeight: "120px",
+            fontWeight: "500",
+            fontFamily: "'Poppins', 'Segoe UI', sans-serif"
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = "#4CAF50";
+            e.target.style.boxShadow = "0 0 0 3px rgba(76, 175, 80, 0.1)";
+            e.target.style.background = "#FFFFFF";
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = "#DCEDC8";
+            e.target.style.boxShadow = "none";
+            e.target.style.background = "#F9FBE7";
+          }}
+        />
+      </div>
+    </div>
+  </div>
 
+  {/* Submit button stays unchanged */}
+
+  {/* Submit Button */}
           <button
             type="submit"
             disabled={isLoading}
-            className={`submit-button ${isLoading ? "loading" : ""}`}
+            style={{
+              width: "100%",
+              padding: "18px",
+              background: "linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%)",
+              color: "white",
+              fontWeight: "700",
+              fontSize: "16px",
+              borderRadius: "14px",
+              border: "none",
+              cursor: "pointer",
+              transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "12px",
+              letterSpacing: "0.5px",
+              textTransform: "uppercase",
+              boxShadow: "0 8px 25px rgba(76, 175, 80, 0.25)"
+            }}
+            onMouseOver={(e) => !isLoading && (e.target.style.transform = "translateY(-3px)", e.target.style.boxShadow = "0 12px 35px rgba(76, 175, 80, 0.35)")}
+            onMouseOut={(e) => !isLoading && (e.target.style.transform = "translateY(0)", e.target.style.boxShadow = "0 8px 25px rgba(76, 175, 80, 0.25)")}
           >
             {isLoading ? (
               <>
-                <span className="spinner"></span> Predicting...
+                <div style={{
+                  width: "20px",
+                  height: "20px",
+                  border: "3px solid rgba(255,255,255,0.3)",
+                  borderTopColor: "white",
+                  borderRadius: "50%",
+                  animation: "spin 1s linear infinite"
+                }}></div>
+                ANALYZING SOIL PROPERTIES...
               </>
             ) : (
-              "Get Prediction"
+              <>
+                <span style={{ fontSize: "18px" }}>🔍</span>
+                ANALYZE SOIL STRENGTH
+              </>
             )}
           </button>
-        </form>
 
-        {/* Prediction display */}
+</form>
+
+        
+
+        {/* Prediction Result */}
         {prediction && (
-          <div className="prediction-card">
-            <div className="prediction-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-              </svg>
+          <div style={{
+            marginTop: "32px",
+            padding: "28px",
+            background: "linear-gradient(135deg, #F1F8E9 0%, #F9FBE7 100%)",
+            borderRadius: "18px",
+            border: "2px solid #DCEDC8",
+            boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
+            animation: "fadeIn 0.5s ease-out"
+          }}>
+            <div style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "20px",
+              marginBottom: "20px"
+            }}>
+              <div style={{
+                width: "56px",
+                height: "56px",
+                background: safetyColors[prediction.safety],
+                borderRadius: "14px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "white",
+                fontSize: "26px",
+                fontWeight: "bold",
+                boxShadow: `0 6px 20px ${safetyColors[prediction.safety]}40`,
+                flexShrink: "0"
+              }}>
+                {safetyIcons[prediction.safety]}
+              </div>
+              <div style={{ flex: "1" }}>
+                <h3 style={{
+                  margin: "0 0 6px 0",
+                  color: "#33691E",
+                  fontSize: "20px",
+                  fontWeight: "700",
+                  letterSpacing: "-0.3px"
+                }}>
+                  Analysis Complete
+                </h3>
+                <p style={{
+                  margin: "0",
+                  color: "#689F38",
+                  fontSize: "13px",
+                  fontWeight: "500",
+                  textTransform: "uppercase",
+                  letterSpacing: "1.2px"
+                }}>
+                  GeoSense AI Prediction
+                </p>
+              </div>
             </div>
-            <div className="prediction-content">
-              <h3 className="prediction-title">Predicted Strength</h3>
-              <div className="prediction-value">
+
+            <div style={{
+              display: "flex",
+              alignItems: "baseline",
+              gap: "8px",
+              marginBottom: "24px"
+            }}>
+              <span style={{
+                fontSize: "48px",
+                fontWeight: "800",
+                color: "#33691E",
+                lineHeight: "1",
+                letterSpacing: "-1px"
+              }}>
                 {prediction.value.toFixed(2)}
-                <span className="prediction-unit"> kN/m²</span>
-              </div>
-              <div
-                className={`safety-class ${
-                  prediction.safety === "Safe"
-                    ? "safe"
-                    : prediction.safety === "Moderate"
-                    ? "moderate"
-                    : "unsafe"
-                }`}
-              >
-                Safety Class: {prediction.safety}
-              </div>
+              </span>
+              <span style={{
+                fontSize: "20px",
+                fontWeight: "600",
+                color: "#689F38",
+                marginBottom: "4px"
+              }}>
+                kN/m²
+              </span>
+            </div>
+
+            <div style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "12px",
+              padding: "12px 24px",
+              background: safetyColors[prediction.safety],
+              borderRadius: "12px",
+              boxShadow: `0 6px 20px ${safetyColors[prediction.safety]}40`
+            }}>
+              <span style={{
+                fontSize: "18px",
+                fontWeight: "800",
+                color: "white",
+                letterSpacing: "1px"
+              }}>
+                {prediction.safety} SOIL
+              </span>
+              <div style={{
+                width: "1px",
+                height: "24px",
+                background: "rgba(255,255,255,0.3)"
+              }}></div>
+              <span style={{
+                fontSize: "14px",
+                color: "white",
+                fontWeight: "500",
+                opacity: "0.9"
+              }}>
+                {prediction.safety === "Safe" ? "✓ Suitable for construction" : 
+                 prediction.safety === "Moderate" ? "⚠ Requires reinforcement" : 
+                 "✗ Requires soil treatment"}
+              </span>
             </div>
           </div>
         )}
 
-        {/* Error display */}
+        {/* Error Display */}
         {error && (
-          <div className="error-card">
-            <div className="error-icon">!</div>
-            <div className="error-content">
-              <h4 className="error-title">Prediction Error</h4>
-              <p className="error-message">{error}</p>
+          <div style={{
+            marginTop: "24px",
+            padding: "20px",
+            background: "linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%)",
+            borderRadius: "14px",
+            borderLeft: "6px solid #F44336",
+            display: "flex",
+            alignItems: "center",
+            gap: "16px",
+            animation: "shake 0.5s ease-in-out"
+          }}>
+            <div style={{
+              width: "28px",
+              height: "28px",
+              background: "#F44336",
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "white",
+              fontSize: "16px",
+              fontWeight: "bold",
+              flexShrink: "0",
+              boxShadow: "0 4px 12px rgba(244, 67, 54, 0.3)"
+            }}>
+              !
+            </div>
+            <div>
+              <h4 style={{
+                margin: "0 0 6px 0",
+                color: "#D32F2F",
+                fontSize: "14px",
+                fontWeight: "700",
+                textTransform: "uppercase",
+                letterSpacing: "0.8px"
+              }}>
+                Analysis Error
+              </h4>
+              <p style={{
+                margin: "0",
+                color: "#B71C1C",
+                fontSize: "14px",
+                lineHeight: "1.5",
+                fontWeight: "500"
+              }}>
+                {error}
+              </p>
             </div>
           </div>
         )}
+
+        {/* Footer */}
+        <div style={{
+          marginTop: "32px",
+          paddingTop: "24px",
+          borderTop: "1px solid #DCEDC8",
+          textAlign: "center"
+        }}>
+          <p style={{
+            margin: "0",
+            color: "#689F38",
+            fontSize: "12px",
+            fontWeight: "500",
+            letterSpacing: "0.8px",
+            opacity: "0.8"
+          }}>
+            © 2024 GeoSense AI • Civil Engineering Intelligence System
+          </p>
+          <p style={{
+            margin: "8px 0 0 0",
+            color: "#8BC34A",
+            fontSize: "11px",
+            fontWeight: "400",
+            letterSpacing: "0.5px",
+            opacity: "0.6"
+          }}>
+            AI-Powered Soil Analysis for Safer Construction
+          </p>
+        </div>
       </div>
 
-      {/* CSS */}
+      {/* Inline CSS for animations */}
       <style>{`
-        .soil-form-container {
-          min-height: 100vh;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          padding: 20px;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+        
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
-        .soil-form-card {
-          width: 100%;
-          max-width: 540px;
-          background: #ffffff;
-          border-radius: 20px;
-          padding: 40px 30px;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-          transition: all 0.3s ease;
+        
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-        .soil-form-card:hover { transform: translateY(-3px); box-shadow: 0 25px 70px rgba(0,0,0,0.2); }
-        .soil-form-header { text-align: center; margin-bottom: 32px; }
-        .soil-icon { width: 64px; height: 64px; margin: 0 auto 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
-        .soil-icon svg { width: 32px; height: 32px; }
-        .soil-form-title { margin: 0 0 8px 0; color: #2d3748; font-size: 28px; font-weight: 700; }
-        .soil-form-subtitle { margin: 0; color: #718096; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px; }
-        .form-group { display: flex; flex-direction: column; }
-        .form-group.full-width { grid-column: 1 / -1; }
-        .form-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .label-text { color: #4a5568; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        .label-unit { color: #a0aec0; font-size: 12px; font-weight: 500; }
-        .form-input { padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; color: #2d3748; transition: all 0.3s ease; background: #f8fafc; }
-        .form-input:focus { outline: none; border-color: #667eea; background: #ffffff; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15); }
-        select.form-input { appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg width='14' height='8' viewBox='0 0 14 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23718796' d='M7 8l7-8H0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; background-size: 12px 12px; }
-        .submit-button { width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s ease; }
-        .submit-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,0.3); }
-        .submit-button:disabled { opacity: 0.7; cursor: not-allowed; }
-        .spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .prediction-card { margin-top: 32px; padding: 24px; background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); border-radius: 16px; display: flex; align-items: center; gap: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .prediction-icon { width: 56px; height: 56px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #2d3748; }
-        .prediction-content { flex: 1; }
-        .prediction-title { margin: 0 0 4px 0; color: #2d3748; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-        .prediction-value { font-size: 36px; font-weight: 800; color: #2d3748; line-height: 1; margin-bottom: 4px; }
-        .prediction-unit { font-size: 16px; font-weight: 600; color: #4a5568; }
-        .safety-class { margin-top: 10px; font-weight: 700; font-size: 16px; }
-        .safety-class.safe { color: #2f855a; }
-        .safety-class.moderate { color: #d69e2e; }
-        .safety-class.unsafe { color: #c53030; }
-        .error-card { margin-top: 24px; padding: 20px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 16px; display: flex; align-items: flex-start; gap: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .error-icon { width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #f5576c; font-weight: 800; flex-shrink: 0; }
-        .error-content { flex: 1; }
-        .error-title { margin: 0 0 4px 0; color: white; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-        .error-message { margin: 0; color: white; font-size: 14px; line-height: 1.5; opacity: 0.9; }
+        
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+          20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
         @media (max-width: 768px) {
-          .form-grid { grid-template-columns: 1fr; }
-          .soil-form-card { padding: 30px 20px; }
-          .prediction-value { font-size: 28px; }
-          .soil-form-title { font-size: 24px; }
+          div[style*="grid-template-columns: 1fr 1fr"] {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
+          
+          div[style*="max-width: 720px"] {
+            padding: 24px !important;
+          }
+          
+          h1[style*="font-size: 32px"] {
+            font-size: 24px !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          div[style*="padding: 40px"] {
+            padding: 20px !important;
+          }
+          
+          button[style*="padding: 18px"] {
+            padding: 14px !important;
+            font-size: 14px !important;
+          }
         }
       `}</style>
     </div>
   );
 };
 
-export default SoilForm;
+export default SoilForm;  
