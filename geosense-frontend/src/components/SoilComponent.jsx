@@ -544,102 +544,86 @@ const SoilForm = () => {
 
         
 
-            {/* Prediction Result */}
-{prediction && (
-  <div
-    style={{
-      marginTop: "32px",
-      padding: "28px",
-      background: "linear-gradient(135deg, #F1F8E9 0%, #F9FBE7 100%)",
-      borderRadius: "18px",
-      border: "2px solid #DCEDC8",
-      boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
-      animation: "fadeIn 0.5s ease-out",
-    }}
-  >
-    <div
-      style={{
-        display: "flex",
-        alignItems: "flex-start",
-        gap: "20px",
-        marginBottom: "20px",
-      }}
-    >
-      <div
-        style={{
-          width: "56px",
-          height: "56px",
-          background: safetyColors[prediction.safety],
-          borderRadius: "14px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "white",
-          fontSize: "26px",
-          fontWeight: "bold",
-          boxShadow: `0 6px 20px ${safetyColors[prediction.safety]}40`,
-          flexShrink: "0",
-        }}
-      >
-        {safetyIcons[prediction.safety]}
-      </div>
-      <div style={{ flex: "1" }}>
-        <h3
-          style={{
-            margin: "0 0 6px 0",
-            color: "#33691E",
-            fontSize: "20px",
-            fontWeight: "700",
-            letterSpacing: "-0.3px",
-          }}
-        >
-          Analysis Complete
-        </h3>
-        <p
-          style={{
-            margin: "0",
-            color: "#689F38",
-            fontSize: "13px",
-            fontWeight: "500",
-            textTransform: "uppercase",
-            letterSpacing: "1.2px",
-          }}
-        >
-          GeoSense AI Prediction
-        </p>
-      </div>
-    </div>
+        {/* Prediction Result */}
+        {prediction && (
+          <div style={{
+            marginTop: "32px",
+            padding: "28px",
+            background: "linear-gradient(135deg, #F1F8E9 0%, #F9FBE7 100%)",
+            borderRadius: "18px",
+            border: "2px solid #DCEDC8",
+            boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
+            animation: "fadeIn 0.5s ease-out"
+          }}>
+            <div style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "20px",
+              marginBottom: "20px"
+            }}>
+              <div style={{
+                width: "56px",
+                height: "56px",
+                background: safetyColors[prediction.safety],
+                borderRadius: "14px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "white",
+                fontSize: "26px",
+                fontWeight: "bold",
+                boxShadow: `0 6px 20px ${safetyColors[prediction.safety]}40`,
+                flexShrink: "0"
+              }}>
+                {safetyIcons[prediction.safety]}
+              </div>
+              <div style={{ flex: "1" }}>
+                <h3 style={{
+                  margin: "0 0 6px 0",
+                  color: "#33691E",
+                  fontSize: "20px",
+                  fontWeight: "700",
+                  letterSpacing: "-0.3px"
+                }}>
+                  Analysis Complete
+                </h3>
+                <p style={{
+                  margin: "0",
+                  color: "#689F38",
+                  fontSize: "13px",
+                  fontWeight: "500",
+                  textTransform: "uppercase",
+                  letterSpacing: "1.2px"
+                }}>
+                  GeoSense AI Prediction
+                </p>
+              </div>
+            </div>
 
-    <div
-      style={{
-        display: "flex",
-        alignItems: "baseline",
-        gap: "8px",
-        marginBottom: "24px",
-      }}
-    >
-      <span
-        style={{
-          fontSize: "48px",
-          fontWeight: "800",
-          color: "#33691E",
-          lineHeight: "1",
-          letterSpacing: "-1px",
-        }}
-      >
-        {prediction.value.toFixed(2)}
-      </span>
-      <span
-        style={{
-          fontSize: "20px",
-          fontWeight: "600",
-          color: "#689F38",
-          marginBottom: "4px",
-        }}
-      >
-        kN/m²
-      </span>
-    </div>
+            <div style={{
+              display: "flex",
+              alignItems: "baseline",
+              gap: "8px",
+              marginBottom: "24px"
+            }}>
+              <span style={{
+                fontSize: "48px",
+                fontWeight: "800",
+                color: "#33691E",
+                lineHeight: "1",
+                letterSpacing: "-1px"
+              }}>
+                {prediction.value.toFixed(2)}
+              </span>
+              <span style={{
+                fontSize: "20px",
+                fontWeight: "600",
+                color: "#689F38",
+                marginBottom: "4px"
+              }}>
+                kN/m²
+              </span>
+            </div>
 
     <div
       style={{
