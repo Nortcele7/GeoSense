@@ -40,7 +40,12 @@ const SoilForm = () => {
         payload,
         { headers: { "Content-Type": "application/json" } }
       );
-      setPrediction(response.data.Prediction);
+
+      // Only take prediction value and safety class
+      setPrediction({
+        value: response.data.Prediction,
+        safety: response.data.SafetyClass,
+      });
     } catch (err) {
       const errorDetail =
         err.response?.data?.detail ||
@@ -133,7 +138,7 @@ const SoilForm = () => {
                 onChange={handleChange}
                 required
                 min="1"
-                max="10"
+                max="5"
                 step="any"
                 className="form-input"
                 placeholder="e.g., 5"
@@ -185,7 +190,8 @@ const SoilForm = () => {
           </button>
         </form>
 
-        {prediction !== null && (
+        {/* Prediction display */}
+        {prediction && (
           <div className="prediction-card">
             <div className="prediction-icon">
               <svg viewBox="0 0 24 24" fill="currentColor">
@@ -195,14 +201,25 @@ const SoilForm = () => {
             <div className="prediction-content">
               <h3 className="prediction-title">Predicted Strength</h3>
               <div className="prediction-value">
-                {prediction.toFixed(2)}
+                {prediction.value.toFixed(2)}
                 <span className="prediction-unit"> kN/m²</span>
               </div>
-              <div className="prediction-note">Based on input parameters</div>
+              <div
+                className={`safety-class ${
+                  prediction.safety === "Safe"
+                    ? "safe"
+                    : prediction.safety === "Moderate"
+                    ? "moderate"
+                    : "unsafe"
+                }`}
+              >
+                Safety Class: {prediction.safety}
+              </div>
             </div>
           </div>
         )}
 
+        {/* Error display */}
         {error && (
           <div className="error-card">
             <div className="error-icon">!</div>
@@ -214,9 +231,8 @@ const SoilForm = () => {
         )}
       </div>
 
-      {/* Styles */}
+      {/* CSS */}
       <style>{`
-        /* Full screen centering */
         .soil-form-container {
           min-height: 100vh;
           display: flex;
@@ -241,7 +257,6 @@ const SoilForm = () => {
         .soil-icon svg { width: 32px; height: 32px; }
         .soil-form-title { margin: 0 0 8px 0; color: #2d3748; font-size: 28px; font-weight: 700; }
         .soil-form-subtitle { margin: 0; color: #718096; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; }
-        .soil-form { margin-top: 32px; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px; }
         .form-group { display: flex; flex-direction: column; }
         .form-group.full-width { grid-column: 1 / -1; }
@@ -254,7 +269,6 @@ const SoilForm = () => {
         .submit-button { width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s ease; }
         .submit-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,0.3); }
         .submit-button:disabled { opacity: 0.7; cursor: not-allowed; }
-        .submit-button.loading { opacity: 0.9; }
         .spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .prediction-card { margin-top: 32px; padding: 24px; background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); border-radius: 16px; display: flex; align-items: center; gap: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
@@ -263,7 +277,10 @@ const SoilForm = () => {
         .prediction-title { margin: 0 0 4px 0; color: #2d3748; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
         .prediction-value { font-size: 36px; font-weight: 800; color: #2d3748; line-height: 1; margin-bottom: 4px; }
         .prediction-unit { font-size: 16px; font-weight: 600; color: #4a5568; }
-        .prediction-note { font-size: 12px; color: #718096; font-weight: 500; }
+        .safety-class { margin-top: 10px; font-weight: 700; font-size: 16px; }
+        .safety-class.safe { color: #2f855a; }
+        .safety-class.moderate { color: #d69e2e; }
+        .safety-class.unsafe { color: #c53030; }
         .error-card { margin-top: 24px; padding: 20px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 16px; display: flex; align-items: flex-start; gap: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .error-icon { width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #f5576c; font-weight: 800; flex-shrink: 0; }
         .error-content { flex: 1; }
