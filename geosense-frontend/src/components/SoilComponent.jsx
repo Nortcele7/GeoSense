@@ -34,6 +34,11 @@ const SoilForm = () => {
   const [aiSuggestion, setAiSuggestion] = useState(null);
   const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(false);
 
+  const [imagePreview, setImagePreview] = useState(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [imageError, setImageError] = useState("");
+  const [detectedSoilType, setDetectedSoilType] = useState(null);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
