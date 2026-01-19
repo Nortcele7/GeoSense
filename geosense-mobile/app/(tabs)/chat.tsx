@@ -11,6 +11,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 
 interface Message {
   id: string;
@@ -20,6 +22,7 @@ interface Message {
 }
 
 export default function ChatScreen() {
+    const insets = useSafeAreaInsets();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -132,10 +135,10 @@ export default function ChatScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+      <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={insets.bottom + 60}
     >
       {/* Chat Header */}
       <View style={styles.header}>
@@ -149,14 +152,26 @@ export default function ChatScreen() {
       </View>
 
       {/* Messages List */}
-      <FlatList
-        ref={flatListRef}
-        data={messages}
-        renderItem={renderMessage}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.messagesList}
-        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-      />
+    <FlatList
+  ref={flatListRef}
+  data={messages}
+  renderItem={renderMessage}
+  keyExtractor={(item) => item.id}
+
+  keyboardDismissMode="interactive"
+  keyboardShouldPersistTaps="handled"
+
+  maintainVisibleContentPosition={{
+    minIndexForVisible: 0,
+    autoscrollToTopThreshold: 10,
+  }}
+
+  contentContainerStyle={[
+    styles.messagesList,
+    { paddingBottom: insets.bottom + 10 }
+  ]}
+/>
+
 
       {/* Typing Indicator */}
       {isTyping && (
@@ -172,7 +187,13 @@ export default function ChatScreen() {
       )}
 
       {/* Input Area */}
-      <View style={styles.inputContainer}>
+      <View
+  style={[
+    styles.inputContainer,
+    { paddingBottom: insets.bottom + 8 }
+  ]}
+>
+
         <TextInput
           style={styles.input}
           value={inputText}

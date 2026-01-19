@@ -9,10 +9,13 @@ import {
   StyleSheet,
   Alert,
   Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 
 interface FormData {
   moisture_content: string;
@@ -29,6 +32,7 @@ interface Prediction {
 }
 
 export default function HomeScreen() {
+   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams();
 
   const [formData, setFormData] = useState<FormData>({
@@ -72,34 +76,64 @@ export default function HomeScreen() {
       });
 
       if (!result.canceled) {
-        setIsLoadingImage(true);
-        const formDataImage = new FormData();
-        
-        // @ts-ignore - React Native FormData accepts this format
-        formDataImage.append('file', {
-          uri: result.assets[0].uri,
-          type: 'image/jpeg',
-          name: 'soil.jpg',
-        });
+        await uploadImage(result.assets[0].uri);
+      }
+    } catch (err: any) {
+      Alert.alert('Error', 'Failed to pick image from gallery');
+    }
+  };
 
-        const response = await axios.post(
-          'https://patronising-postcentral-pamella.ngrok-free.dev/image',
-          formDataImage,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-        );
+  const handleCameraCapture = async () => {
+    try {
+      const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+      
+      if (!permissionResult.granted) {
+        Alert.alert('Permission Required', 'Please allow access to your camera');
+        return;
+      }
 
-        if (response.data.soil) {
-          const detectedSoil = response.data.soil.charAt(0).toUpperCase() + response.data.soil.slice(1);
-          setFormData(prev => ({
-            ...prev,
-            soil_type: detectedSoil
-          }));
-          Alert.alert('Success', `Detected soil type: ${detectedSoil}`);
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        quality: 0.8,
+      });
+
+      if (!result.canceled) {
+        await uploadImage(result.assets[0].uri);
+      }
+    } catch (err: any) {
+      Alert.alert('Error', 'Failed to capture image from camera');
+    }
+  };
+
+  const uploadImage = async (uri: string) => {
+    try {
+      setIsLoadingImage(true);
+      const formDataImage = new FormData();
+      
+      // @ts-ignore - React Native FormData accepts this format
+      formDataImage.append('file', {
+        uri: uri,
+        type: 'image/jpeg',
+        name: 'soil.jpg',
+      });
+
+      const response = await axios.post(
+        'https://patronising-postcentral-pamella.ngrok-free.dev/image',
+        formDataImage,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         }
+      );
+
+      if (response.data.soil) {
+        const detectedSoil = response.data.soil.charAt(0).toUpperCase() + response.data.soil.slice(1);
+        setFormData(prev => ({
+          ...prev,
+          soil_type: detectedSoil
+        }));
+        Alert.alert('Success', `Detected soil type: ${detectedSoil}`);
       }
     } catch (err: any) {
       Alert.alert('Error', 'Failed to detect soil type from image');
@@ -183,7 +217,19 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
+   <KeyboardAvoidingView
+  style={styles.container}
+  behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+  keyboardVerticalOffset={insets.bottom + 70}
+>
+
+      <ScrollView
+  style={styles.scrollView}
+  keyboardShouldPersistTaps="handled"
+  automaticallyAdjustKeyboardInsets={true}
+  contentInset={{ bottom: insets.bottom + 20 }}
+>
+
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Text style={styles.logo}>GS</Text>
@@ -198,15 +244,26 @@ export default function HomeScreen() {
         {/* Image Upload */}
         <View style={styles.inputGroup}>
           <Text style={styles.label}>📸 UPLOAD SOIL IMAGE</Text>
-          <TouchableOpacity
-            style={styles.imageButton}
-            onPress={handleImageUpload}
-            disabled={isLoadingImage}
-          >
-            <Text style={styles.imageButtonText}>
-              {isLoadingImage ? 'Processing...' : 'Choose Image'}
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.buttonGroup}>
+            <TouchableOpacity
+              style={[styles.imageButton, { flex: 1 }]}
+              onPress={handleCameraCapture}
+              disabled={isLoadingImage}
+            >
+              <Text style={styles.imageButtonText}>
+                {isLoadingImage ? 'Processing...' : '📷 Camera'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.imageButton, { flex: 1 }]}
+              onPress={handleImageUpload}
+              disabled={isLoadingImage}
+            >
+              <Text style={styles.imageButtonText}>
+                {isLoadingImage ? 'Processing...' : '🖼️ Gallery'}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Soil Type */}
@@ -389,12 +446,16 @@ export default function HomeScreen() {
           </View>
         )}
       </View>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  scrollView: {
     flex: 1,
     backgroundColor: '#F1F8E9',
   },

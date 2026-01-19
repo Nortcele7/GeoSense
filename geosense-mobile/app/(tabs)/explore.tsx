@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 
 interface MarkerPosition {
   latitude: number;
@@ -22,6 +24,7 @@ interface GeoData {
 }
 
 export default function ExploreScreen() {
+   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [markerPosition, setMarkerPosition] = useState<MarkerPosition | null>(null);
   const [geoData, setGeoData] = useState<GeoData | null>(null);
@@ -157,7 +160,10 @@ export default function ExploreScreen() {
   `;
 
   return (
-    <View style={styles.container}>
+    <View style={[
+      styles.container,
+      { paddingBottom: insets.bottom }
+    ]}>
       <WebView
         style={styles.map}
         source={{ html: mapHtml }}
