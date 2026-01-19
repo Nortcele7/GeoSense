@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@react-native-picker/picker": "^2.11.4",
+    "axios": "^1.13.2",
+    "expo-image-picker": "^17.0.10",
+    "expo-location": "^19.0.8",
+    "react-native-maps": "^1.26.20"
+  }
+}

@@ -53,7 +53,7 @@ function LocationMarker() {
     setGeoData(null); // Reset previous data
     try {
       // Adjust URL to your backend port
-      const response = await axios.post('http://127.0.0.1:8000/get_geo_data', {
+      const response = await axios.post('https://patronising-postcentral-pamella.ngrok-free.dev/get_geo_data', {
         latitude: lat,
         longitude: lng
       });
