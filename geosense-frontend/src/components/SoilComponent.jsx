@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 
 const SoilForm = () => {
   const [formData, setFormData] = useState({
@@ -713,13 +717,16 @@ const SoilForm = () => {
           background: "#E8F5E9",
           borderRadius: "12px",
           color: "#2E7D32",
-          fontWeight: "600",
           fontSize: "16px",
           boxShadow: "0 4px 15px rgba(46, 125, 50, 0.2)",
-          whiteSpace: "pre-wrap",
         }}
       >
-        {aiSuggestion}
+        <ReactMarkdown
+          remarkPlugins={[remarkMath]}
+          rehypePlugins={[rehypeKatex]}
+        >
+          {aiSuggestion}
+        </ReactMarkdown>
       </div>
     )}
   </div>
