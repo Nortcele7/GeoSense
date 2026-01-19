@@ -15,6 +15,9 @@ const SoilForm = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const [aiSuggestion, setAiSuggestion] = useState(null);
+  const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(false);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -54,6 +57,28 @@ const SoilForm = () => {
       setError(`Error: ${errorDetail}`);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+    const handleGetSuggestion = async () => {
+    if (!prediction) return;
+    setIsLoadingSuggestion(true);
+    setAiSuggestion(null);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/aisuggest",
+        {
+          bearing_capacity: prediction.value,
+          safety_class: prediction.safety
+        },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      setAiSuggestion(response.data.text);
+    } catch (err) {
+      setAiSuggestion("Error fetching AI suggestion. Please try again.");
+    } finally {
+      setIsLoadingSuggestion(false);
     }
   };
 
@@ -555,7 +580,7 @@ const SoilForm = () => {
               <div style={{ flex: "1" }}>
                 <h3 style={{
                   margin: "0 0 6px 0",
-                  color: safetyColors[prediction.safety],
+                  color: "#33691E",
                   fontSize: "20px",
                   fontWeight: "700",
                   letterSpacing: "-0.3px"
@@ -564,7 +589,7 @@ const SoilForm = () => {
                 </h3>
                 <p style={{
                   margin: "0",
-                  color: safetyColors[prediction.safety],
+                  color: "#689F38",
                   fontSize: "13px",
                   fontWeight: "500",
                   textTransform: "uppercase",
@@ -584,7 +609,7 @@ const SoilForm = () => {
               <span style={{
                 fontSize: "48px",
                 fontWeight: "800",
-                color: safetyColors[prediction.safety],
+                color: "#33691E",
                 lineHeight: "1",
                 letterSpacing: "-1px"
               }}>
@@ -593,48 +618,100 @@ const SoilForm = () => {
               <span style={{
                 fontSize: "20px",
                 fontWeight: "600",
-                color: safetyColors[prediction.safety],
+                color: "#689F38",
                 marginBottom: "4px"
               }}>
                 kN/m²
               </span>
             </div>
 
-            <div style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "12px",
-              padding: "12px 24px",
-              background: safetyColors[prediction.safety],
-              borderRadius: "12px",
-              boxShadow: `0 6px 20px ${safetyColors[prediction.safety]}40`
-            }}>
-              <span style={{
-                fontSize: "18px",
-                fontWeight: "800",
-                color: "white",
-                letterSpacing: "1px"
-              }}>
-                {prediction.safety} SOIL
-              </span>
-              <div style={{
-                width: "1px",
-                height: "24px",
-                background: "rgba(255,255,255,0.3)"
-              }}></div>
-              <span style={{
-                fontSize: "14px",
-                color: "white",
-                fontWeight: "500",
-                opacity: "0.9"
-              }}>
-                {prediction.safety === "Safe" ? "✓ Suitable for construction" : 
-                 prediction.safety === "Moderate" ? "⚠ Requires reinforcement" : 
-                 "✗ Requires soil treatment"}
-              </span>
-            </div>
-          </div>
-        )}
+    <div
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "12px",
+        padding: "12px 24px",
+        background: safetyColors[prediction.safety],
+        borderRadius: "12px",
+        boxShadow: `0 6px 20px ${safetyColors[prediction.safety]}40`,
+      }}
+    >
+      <span
+        style={{
+          fontSize: "18px",
+          fontWeight: "800",
+          color: "white",
+          letterSpacing: "1px",
+        }}
+      >
+        {prediction.safety} SOIL
+      </span>
+      <div
+        style={{
+          width: "1px",
+          height: "24px",
+          background: "rgba(255,255,255,0.3)",
+        }}
+      ></div>
+      <span
+        style={{
+          fontSize: "14px",
+          color: "white",
+          fontWeight: "500",
+          opacity: "0.9",
+        }}
+      >
+        {prediction.safety === "Safe"
+          ? "✓ Suitable for construction"
+          : prediction.safety === "Moderate"
+          ? "⚠ Requires reinforcement"
+          : "✗ Requires soil treatment"}
+      </span>
+    </div>
+
+    {/* AI Suggestion Button */}
+    <button
+      onClick={handleGetSuggestion}
+      disabled={isLoadingSuggestion}
+      style={{
+        marginTop: "24px",
+        width: "100%",
+        padding: "16px",
+        fontSize: "16px",
+        fontWeight: "600",
+        borderRadius: "12px",
+        border: "none",
+        cursor: "pointer",
+        background: isLoadingSuggestion ? "#A5D6A7" : "#4CAF50",
+        color: "white",
+        boxShadow: "0 6px 20px rgba(76, 175, 80, 0.3)",
+        transition: "background 0.3s ease",
+      }}
+    >
+      {isLoadingSuggestion ? "Loading suggestion..." : "Get AI Construction Suggestion"}
+    </button>
+
+    {/* AI Suggestion Display */}
+    {aiSuggestion && (
+      <div
+        style={{
+          marginTop: "16px",
+          padding: "20px",
+          background: "#E8F5E9",
+          borderRadius: "12px",
+          color: "#2E7D32",
+          fontWeight: "600",
+          fontSize: "16px",
+          boxShadow: "0 4px 15px rgba(46, 125, 50, 0.2)",
+          whiteSpace: "pre-wrap",
+        }}
+      >
+        {aiSuggestion}
+      </div>
+    )}
+  </div>
+)}
+
 
         {/* Error Display */}
         {error && (
