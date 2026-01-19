@@ -4,29 +4,76 @@ import SoilForm from "./components/SoilComponent";
 import Bot from "./components/Bot";
 import MapComponent from "./components/Map";
 
-
 function App() {
   return (
-    <div>
-      <nav style={{ padding: '1rem', background: '#f0f0f0', marginBottom: '1rem', display: 'flex', gap: '20px', justifyContent: 'center' }}>
-        <Link to="/" style={{ textDecoration: 'none', color: '#333', fontWeight: 'bold' }}>Home</Link>
-        <Link to="/map" style={{ textDecoration: 'none', color: '#333', fontWeight: 'bold' }}>Geo Map</Link>
+    <div style={{ backgroundColor: "#F1F8E9", minHeight: "100vh" }}>
+      
+      {/* Navigation */}
+      <nav
+        style={{
+          padding: "1rem",
+          background: "linear-gradient(90deg, #2E7D32, #4CAF50)",
+          marginBottom: "1.5rem",
+          display: "flex",
+          gap: "30px",
+          justifyContent: "center",
+          boxShadow: "0 4px 8px rgba(0,0,0,0.1)"
+        }}
+      >
+        <Link
+          to="/"
+          style={{
+            textDecoration: "none",
+            color: "#FBC02D",
+            fontWeight: "bold",
+            fontSize: "1.1rem"
+          }}
+        >
+          Home
+        </Link>
+
+        <Link
+          to="/map"
+          style={{
+            textDecoration: "none",
+            color: "#FBC02D",
+            fontWeight: "bold",
+            fontSize: "1.1rem"
+          }}
+        >
+          Geo Map
+        </Link>
       </nav>
+      
 
-      <h1 style={{ textAlign: 'center', margin: '20px 0' }}>GeoSense Explorer</h1>
-
+      {/* Routes */}
       <Routes>
-        <Route path="/" element={
-          <div>
-            <SoilForm />
-            <Bot />
-          </div>
-        } />
-        <Route path="/map" element={
-          <div style={{ padding: '0 20px', marginBottom: '20px' }}>
-            <MapComponent />
-          </div>
-        } />
+        <Route
+          path="/"
+          element={
+            <div style={{ maxWidth: "1100px", margin: "auto", padding: "0 20px" }}>
+              <SoilForm />
+              <div style={{ marginTop: "30px" }}>
+                <Bot />
+              </div>
+            </div>
+          }
+        />
+
+        <Route
+          path="/map"
+          element={
+            <div
+              style={{
+                padding: "0 20px 30px",
+                maxWidth: "1200px",
+                margin: "auto"
+              }}
+            >
+              <MapComponent />
+            </div>
+          }
+        />
       </Routes>
     </div>
   );
