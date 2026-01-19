@@ -33,9 +33,48 @@ const SoilForm = () => {
 
   const [aiSuggestion, setAiSuggestion] = useState(null);
   const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(false);
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
+  const [imageError, setImageError] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setIsLoadingImage(true);
+    setImageError("");
+
+    const formDataImage = new FormData();
+    formDataImage.append("file", file);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/image",
+        formDataImage
+      );
+
+      if (response.data.soil) {
+        const detectedSoil = response.data.soil.charAt(0).toUpperCase() + response.data.soil.slice(1);
+        setFormData(prev => ({
+          ...prev,
+          soil_type: detectedSoil
+        }));
+        setImageError("");
+      }
+    } catch (err) {
+      const errorDetail =
+        err.response?.data?.detail ||
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to detect soil type from image";
+      setImageError(`Error: ${errorDetail}`);
+    } finally {
+      setIsLoadingImage(false);
+      e.target.value = "";
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -192,6 +231,72 @@ const SoilForm = () => {
   }}>
     {/* Column 1 */}
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      {/* Image Upload for Soil Detection */}
+      <div>
+        <label style={{
+          color: "#33691E",
+          fontSize: "13px",
+          fontWeight: "600",
+          textTransform: "uppercase",
+          letterSpacing: "1px",
+          marginBottom: "8px",
+          display: "block",
+          alignItems: "center",
+          gap: "6px"
+        }}>
+          <span>📸</span>
+          UPLOAD SOIL IMAGE
+        </label>
+        <div style={{
+          position: "relative",
+          width: "100%"
+        }}>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            disabled={isLoadingImage}
+            style={{
+              width: "90%",
+              padding: "15px 16px",
+              borderRadius: "12px",
+              border: "2px dashed #DCEDC8",
+              fontSize: "14px",
+              color: "#33691E",
+              background: "#F9FBE7",
+              cursor: isLoadingImage ? "not-allowed" : "pointer",
+              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              fontWeight: "500",
+              opacity: isLoadingImage ? 0.6 : 1
+            }}
+          />
+          {isLoadingImage && (
+            <div style={{
+              position: "absolute",
+              top: "50%",
+              right: "16px",
+              transform: "translateY(-50%)",
+              width: "20px",
+              height: "20px",
+              border: "3px solid rgba(76, 175, 80, 0.2)",
+              borderTopColor: "#4CAF50",
+              borderRadius: "50%",
+              animation: "spin 1s linear infinite"
+            }}></div>
+          )}
+        </div>
+        {imageError && (
+          <p style={{
+            marginTop: "6px",
+            color: "#D32F2F",
+            fontSize: "12px",
+            fontWeight: "500"
+          }}>
+            {imageError}
+          </p>
+        )}
+      </div>
+
       {/* Soil Type */}
       <div>
         <label style={{
