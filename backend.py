@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import joblib
@@ -7,6 +7,13 @@ from pydantic import BaseModel
 from google import genai
 from dotenv import load_dotenv
 import os
+from PIL import Image
+import io
+import sys
+
+sys.path.append(os.path.dirname(__file__))
+
+import soil_engine_core  # now it will always find the module
 
 load_dotenv()
 
@@ -39,14 +46,6 @@ def get_safety_class(value: float) -> str:
         return "Moderate"
     else:
         return "Safe"
-
-# def get_message(safety: str) -> str:
-#     if safety == "Safe":
-#         return "✅ Structure condition is SAFE for design."
-#     elif safety == "Moderate":
-#         return "⚠ Moderate capacity – consider improvement."
-#     else:
-#         return "❌ Unsafe – redesign or ground improvement required."
 
 def field_observation_score(text: str) -> float:
     score = nlp_model.predict([text])[0]
@@ -141,3 +140,32 @@ async def generate_content(req: SuggestionRequest):
         return GenerateResponse(text=response.text)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+
+
+
+@app.post("/image")
+async def image(file: UploadFile = File(...)):
+    try:
+        img_bytes = await file.read()
+        img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
+        result = soil_engine_core.classify_soil(img)
+
+        # Standardize output for HTML JS
+        if result.get("error"):
+            return JSONResponse({
+                "error": True,
+                "message": result.get("message", "Unknown error")
+            })
+        else:
+            return JSONResponse({
+                "error": False,
+                "soil": result.get("soil", "unknown"),
+                "confidence": result.get("confidence", 0)
+            })
+    except Exception as e:
+        return JSONResponse({
+            "error": True,
+            "message": f"Failed to process image: {str(e)}"
+        })
