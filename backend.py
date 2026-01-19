@@ -100,7 +100,7 @@ async def generate_content(req: SuggestionRequest):
         prompt = (
             f"Given the soil bearing capacity of {req.bearing_capacity:.2f} kPa "
             f"which is classified as '{req.safety_class}', "
-            "provide a very short one-liner suggestion about what kind of construction can be made."
+            "provide a 4 point suggestion about what kind of construction can be made and what should not be done also give the bearing capacity value after considering factor of safety of 3."
         )
 
         response = client.models.generate_content(
