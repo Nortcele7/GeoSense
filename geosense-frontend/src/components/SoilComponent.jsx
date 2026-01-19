@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 
 const SoilForm = () => {
@@ -10,6 +11,17 @@ const SoilForm = () => {
     soil_type: "Sand",
     grain_size_type: "Fine",
   });
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state && location.state.soil_type) {
+      setFormData(prev => ({
+        ...prev,
+        soil_type: location.state.soil_type
+      }));
+    }
+  }, [location]);
 
   const [prediction, setPrediction] = useState(null);
   const [error, setError] = useState("");
@@ -76,6 +88,7 @@ const SoilForm = () => {
       );
       setAiSuggestion(response.data.text);
     } catch (err) {
+      console.error(err);
       setAiSuggestion("Error fetching AI suggestion. Please try again.");
     } finally {
       setIsLoadingSuggestion(false);

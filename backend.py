@@ -52,6 +52,37 @@ def field_observation_score(text: str) -> float:
     score = nlp_model.predict([text])[0]
     return float(score)
 
+
+# Pydantic model
+class GeoRequest(BaseModel):
+    latitude: float
+    longitude: float
+
+# Load Geo Data
+# Ensure we reload if needed or handle path correctly
+try:
+    geo_df = pd.read_csv("soil_geo_data.csv")
+except FileNotFoundError:
+    # If not found, create an empty one or handle error
+    geo_df = pd.DataFrame(columns=['latitude', 'longitude', 'soil_type'])
+
+@app.post("/get_geo_data")
+def get_geo_data(req: GeoRequest):
+    if geo_df.empty:
+        return {"error": "No geo data available"}
+    
+    # Simple nearest neighbor search using Euclidean distance
+    # In a real app, use Scipy KDTree or a geospatial database (PostGIS)
+    distances = ((geo_df['latitude'] - req.latitude)**2 + (geo_df['longitude'] - req.longitude)**2)**0.5
+    nearest_idx = distances.argmin()
+    
+    match = geo_df.iloc[nearest_idx]
+    
+    return {
+        "soil_type": match["soil_type"],
+        "distance_deg": float(distances.iloc[nearest_idx]) # debug info
+    }
+
 # Pydantic models
 class Soil(BaseModel):
     moisture_content: float
