@@ -52,7 +52,7 @@ const SoilForm = () => {
 
     try {
       const response = await axios.post(
-        "https://patronising-postcentral-pamella.ngrok-free.dev/image",
+        "http://localhost:8000/image",
         formDataImage
       );
 
@@ -94,7 +94,7 @@ const SoilForm = () => {
 
     try {
       const response = await axios.post(
-        "https://patronising-postcentral-pamella.ngrok-free.dev/predict",
+        "http://localhost:8000/predict",
         payload,
         { headers: { "Content-Type": "application/json" } }
       );
@@ -122,7 +122,7 @@ const SoilForm = () => {
 
     try {
       const response = await axios.post(
-        "https://patronising-postcentral-pamella.ngrok-free.dev/aisuggest",
+        "http://localhost:8000/aisuggest",
         {
           bearing_capacity: prediction.value,
           safety_class: prediction.safety
@@ -484,7 +484,7 @@ const SoilForm = () => {
           onChange={handleChange}
           required
           step="any"
-          placeholder="1.65"
+          placeholder="15.65"
           style={{
             width: "90%",
             padding: "15px 16px",
@@ -537,7 +537,7 @@ const SoilForm = () => {
           onChange={handleChange}
           required
           step="any"
-          placeholder="2.5"
+          placeholder="1.5"
           style={{
             width: "100%",
             padding: "15px 16px",
