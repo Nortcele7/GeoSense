@@ -26,13 +26,11 @@ model = joblib.load("model1.pkl")
 nlp_model = joblib.load("nlp_model.pkl")
 
 # Allow CORS for React frontend
-origins = [
-    "http://localhost:5173",  # React dev server
-]
+origins = ["*"]  # Allow all during local dev; tighten for production
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],   # allows POST, GET, OPTIONS etc.
     allow_headers=["*"],   # allows all headers
