@@ -57,6 +57,7 @@ function App() {
   return (
     <>
     <Container
+      connected={clientState !== 'disconnected'}
       style={{
         width: '500px',
         height: '800px',
@@ -85,6 +86,7 @@ function App() {
         sendMessage={client?.sendMessage}
       />
       <Composer
+        connected={clientState !== 'disconnected'}
         disableComposer={false}
         isReadOnly={false}
         allowFileUpload={true}
