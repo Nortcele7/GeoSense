@@ -1,8 +1,47 @@
-# GeoSense
+<div align="center">
+
+# 🌱 GeoSense AI
+
+### **CESS HACKATHON 2025 WINNING PROJECT**
+
+<p><em>Smart soil intelligence for safer, stronger, and more sustainable construction.</em></p>
+
+<p>
+  <img src="https://img.shields.io/badge/Award-CESS%20Hackathon%202025%20Winner-FFD700?style=for-the-badge&logo=trophy&logoColor=white" alt="CESS Hackathon 2025 Winner">
+  <img src="https://img.shields.io/badge/AI-Geotechnical%20Intelligence-4CAF50?style=for-the-badge&logo=google gemini&logoColor=white" alt="AI Geotechnical Intelligence">
+  <img src="https://img.shields.io/badge/Stack-React%20%7C%20FastAPI-2E7D32?style=for-the-badge" alt="Technology stack">
+</p>
+
+<img src="./images/Screenshot%202026-11-08%20at%2018.59.03.png" alt="GeoSense AI soil strength prediction interface" width="92%">
+
+</div>
 
 GeoSense is a geotechnical analysis platform for soil classification, field-observation analysis, and soil bearing-capacity prediction. It combines a FastAPI machine-learning backend with a React web application and an Expo/React Native mobile application.
 
 > **Important:** GeoSense provides engineering estimates for experimentation and educational use. Always consult a qualified geotechnical or structural engineer before making construction decisions.
+
+## ✨ Why GeoSense
+
+GeoSense turns complex soil information into practical, understandable insight. Upload a soil image, enter field observations, inspect geographic data, and receive a bearing-capacity estimate with AI-assisted construction guidance — all from one connected platform.
+
+## 🖥️ Product preview
+
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="./images/Screenshot%202026-11-08%20at%2018.59.09.png" alt="GeoSense bearing capacity prediction result" width="100%"></td>
+      <td><img src="./images/Screenshot%202026-11-08%20at%2018.59.12.png" alt="GeoSense construction recommendations" width="100%"></td>
+    </tr>
+    <tr>
+      <td align="center"><strong>AI bearing-capacity prediction</strong></td>
+      <td align="center"><strong>Construction recommendations</strong></td>
+    </tr>
+  </table>
+  <br>
+  <img src="./images/Screenshot%202026-11-08%20at%2019.00.49.png" alt="GeoSense Bot geotechnical assistant" width="92%">
+  <br>
+  <em>GeoSense Bot provides an interactive geotechnical assistant experience.</em>
+</div>
 
 ## Features
 
