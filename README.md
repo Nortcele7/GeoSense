@@ -1,190 +1,215 @@
 # GeoSense
 
-A comprehensive geotechnical analysis platform that combines machine learning, natural language processing, and soil classification to provide intelligent soil analysis and bearing capacity predictions.
+GeoSense is a geotechnical analysis platform for soil classification, field-observation analysis, and soil bearing-capacity prediction. It combines a FastAPI machine-learning backend with a React web application and an Expo/React Native mobile application.
 
-## 🌟 Features
+> **Important:** GeoSense provides engineering estimates for experimentation and educational use. Always consult a qualified geotechnical or structural engineer before making construction decisions.
 
-- **Soil Classification**: Image-based soil type identification (clay, sand, gravel, silt)
-- **NLP Field Observations**: Process and analyze field observation notes using natural language processing
-- **Bearing Capacity Analysis**: Calculate and predict soil bearing capacity using machine learning
-- **Multi-Platform Support**: 
-  - Web application (React/Vite frontend)
-  - Mobile application (React Native)
-  - Backend API services
-- **Data Augmentation**: Enhanced field observation data processing
-- **Interactive Notebooks**: Jupyter notebooks for data exploration and model development
+## Features
 
-## 📁 Project Structure
+- Image-based classification of clay, sand, gravel, and silt
+- Soil bearing-capacity prediction from geotechnical parameters
+- Natural-language processing of field observations
+- AI-generated construction suggestions based on predicted bearing capacity
+- Geographic soil-data lookup by latitude and longitude
+- React web interface
+- Expo/React Native mobile interface
+- Jupyter notebooks for data exploration and model training
 
-```
+## Repository structure
+
+```text
 GeoSense/
-├── app.py                                    # Main application entry point
-├── app1.py                                   # Alternative application configuration
-├── backend.py                                # Backend API server
-├── soil_engine_core.py                       # Core soil analysis engine
-├── dataset/                                  # Training dataset
-│   ├── clay/                                 # Clay soil images
-│   ├── gravel/                               # Gravel soil images
-│   ├── sand/                                 # Sand soil images
-│   └── slit/                                 # Silt soil images
-├── nlp_field_observation.csv                 # Field observation data
-├── nlp_field_observation_augmented.csv       # Augmented observation data
-├── soil_geo_data.csv                         # Geotechnical data
-├── synthetic_soil_bearing_capacity.csv       # Bearing capacity dataset
-├── nlp_process.ipynb                         # NLP processing notebook
-├── main.ipynb                                # Main analysis notebook
-├── geosense-frontend/                        # Web frontend (Vite + React)
-└── geosense-mobile/                          # Mobile app (React Native)
+├── backend.py                         # FastAPI backend
+├── soil_engine_core.py                # Image classification and feature extraction
+├── app.py                             # Streamlit client using the backend API
+├── app1.py                            # Standalone Streamlit predictor
+├── model1.pkl                         # Bearing-capacity model
+├── nlp_model.pkl                      # Field-observation NLP model
+├── dataset/                           # Soil image dataset
+├── *.csv                              # Training and geographic data
+├── *.ipynb                            # Analysis and training notebooks
+├── requirements.txt                   # Python dependencies
+├── geosense-frontend/                 # Vite/React web application
+└── geosense-mobile/                   # Expo/React Native mobile application
 ```
 
-## 🚀 Getting Started
+## Requirements
 
-### Prerequisites
+- Python 3.10 or newer
+- Node.js 18 or newer
+- npm
+- Homebrew `libomp` on macOS, required by LightGBM:
 
-- Python 3.8+
-- Node.js 16+
-- npm or yarn
+  ```bash
+  brew install libomp
+  ```
 
-### Backend Setup
+## Local backend setup
 
-1. Install Python dependencies:
+From the repository root:
+
 ```bash
-pip install -r requirements.txt
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 ```
 
-2. Run the backend server:
+Create a `.env` file in the repository root:
+
+```env
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+Start the API:
+
 ```bash
-python backend.py
+python -m uvicorn backend:app --reload
 ```
 
-### Frontend Setup
+The backend runs at `http://127.0.0.1:8000`.
 
-1. Navigate to the frontend directory:
+- Interactive API documentation: `http://127.0.0.1:8000/docs`
+- OpenAPI schema: `http://127.0.0.1:8000/openapi.json`
+
+Do not commit `.env` or expose API keys in source control.
+
+## Local web application setup
+
+In a second terminal:
+
 ```bash
 cd geosense-frontend
-```
-
-2. Install dependencies:
-```bash
 npm install
-```
-
-3. Start the development server:
-```bash
 npm run dev
 ```
 
-### Mobile App Setup
+The Vite development server will print the local frontend URL. During local development, the web application expects the backend at `http://localhost:8000`.
 
-1. Navigate to the mobile directory:
+To use a deployed backend, replace the hard-coded backend URL in the frontend with a Vite environment variable:
+
+```env
+VITE_API_URL=https://your-backend.example.com
+```
+
+Then use:
+
+```js
+const API_URL = import.meta.env.VITE_API_URL;
+```
+
+## Mobile application setup
+
 ```bash
 cd geosense-mobile
-```
-
-2. Install dependencies:
-```bash
 npm install
-```
-
-3. Start the app:
-```bash
 npm start
 ```
 
-## 🔬 Components
+The mobile application must use a publicly reachable backend URL. A mobile device cannot access the computer's `localhost`. For local device testing, use a tunnel such as ngrok:
 
-### Soil Engine Core
-The `soil_engine_core.py` module provides:
-- Soil property calculations
-- Bearing capacity predictions
-- Geotechnical parameter analysis
+```bash
+ngrok http 8000
+```
 
-### NLP Processing
-Natural language processing capabilities for:
-- Field observation extraction
-- Automated report generation
-- Data augmentation from text descriptions
+Update the mobile API base URL with the tunnel URL. For production, use the deployed backend URL instead.
 
-### Image Classification
-Deep learning model for soil type identification:
-- Clay
-- Sand
-- Gravel
-- Silt
+## API routes
 
-## 📊 Data Files
+| Method | Route | Description |
+|---|---|---|
+| `POST` | `/predict` | Predict bearing capacity and return a safety classification |
+| `POST` | `/image` | Classify a soil image |
+| `POST` | `/aisuggest` | Generate construction suggestions with Gemini |
+| `POST` | `/get_geo_data` | Find the nearest soil record for coordinates |
 
-- **nlp_field_observation.csv**: Raw field observation data
-- **nlp_field_observation_augmented.csv**: Enhanced observation data with NLP processing
-- **soil_geo_data.csv**: Geotechnical soil properties and measurements
-- **synthetic_soil_bearing_capacity.csv**: Training data for bearing capacity predictions
+## Deployment with Render
 
-## 🛠️ Technologies
+Render should host the backend and frontend as separate services.
 
-### Backend
-- Python
-- Machine Learning (TensorFlow/PyTorch/Scikit-learn)
-- Natural Language Processing
-- Flask/FastAPI (API framework)
+### Backend Web Service
 
-### Frontend
-- React
-- Vite
-- JavaScript/TypeScript
+Create a **Web Service** connected to this repository:
 
-### Mobile
-- React Native
-- TypeScript
+```text
+Root Directory: .
+Build Command: pip install -r requirements.txt
+Start Command: uvicorn backend:app --host 0.0.0.0 --port $PORT
+```
 
-## 📱 Usage
+Add this environment variable in Render:
 
-1. **Image Analysis**: Upload soil images to classify soil type
-2. **Field Observations**: Input text-based field notes for automated analysis
-3. **Bearing Capacity**: Calculate soil bearing capacity based on parameters
-4. **Report Generation**: Generate comprehensive geotechnical reports
+```text
+GEMINI_API_KEY=your_gemini_api_key
+```
 
-## 🧪 Jupyter Notebooks
+Confirm the deployment at:
 
-Explore the analysis notebooks:
-- `main.ipynb`: Main analysis workflow
-- `nlp_process.ipynb`: NLP processing pipeline
-- `new.ipynb`: Experimental features
+```text
+https://your-backend.onrender.com/docs
+```
 
-## 📈 Model Training
+### Frontend Static Site
 
-The dataset contains labeled images for soil classification:
-- Clay: 29 samples
-- Gravel: 70 samples
-- Sand: 30+ samples
-- Silt: Multiple samples
+Create a **Static Site** connected to the same repository:
 
-## 🤝 Contributing
+```text
+Root Directory: geosense-frontend
+Build Command: npm install && npm run build
+Publish Directory: dist
+```
 
-Contributions are welcome! Please follow these steps:
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
+Set the frontend environment variable:
 
-## 📄 License
+```text
+VITE_API_URL=https://your-backend.onrender.com
+```
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Update FastAPI CORS in `backend.py` to allow the deployed frontend domain:
 
-Copyright (c) 2026 GeoVision
+```python
+origins = [
+    "https://your-frontend.onrender.com",
+]
+```
 
-## 👥 Authors
+After changing CORS or backend code, redeploy the backend service.
 
-**GeoVision Team**
+## Development and validation
 
-GeoSense Development Team
+Build and lint the web application:
 
-## 🔗 Links
+```bash
+cd geosense-frontend
+npm run lint
+npm run build
+```
 
-- Documentation: [Coming Soon]
-- API Reference: [Coming Soon]
-- Support: [Coming Soon]
+Run the Streamlit application:
 
----
+```bash
+streamlit run app.py
+```
 
-**Note**: This is a geotechnical analysis tool. Always verify results with professional engineers for critical applications.
+## Data and models
+
+The repository includes trained model files and datasets used by the applications:
+
+- `model1.pkl` — bearing-capacity prediction pipeline
+- `nlp_model.pkl` — field-observation text model
+- `soil_geo_data.csv` — geographic soil records
+- `synthetic_soil_bearing_capacity.csv` — bearing-capacity training data
+- `nlp_field_observation.csv` — field-observation data
+- `nlp_field_observation_augmented.csv` — augmented field-observation data
+- `dataset/` — labeled soil images
+
+The model files are loaded when the backend starts, so they must be present in the backend deployment.
+
+## Collaborators
+
+- [Shreyam Regmi](https://github.com/Nortcele7)
+- [Shubham Pathak](https://github.com/ShubhamPathak1)
+- [Prince Parajuli](https://github.com/princeparajuli)
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
