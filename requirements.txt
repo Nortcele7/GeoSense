@@ -1,0 +1,23 @@
+# Backend API
+fastapi
+pydantic
+uvicorn[standard]
+python-multipart
+google-genai
+python-dotenv
+
+# Streamlit applications and shared data/model utilities
+streamlit
+requests
+numpy
+pandas
+Pillow
+joblib
+scikit-learn
+
+# Notebook analysis and model training
+jupyter
+ipykernel
+matplotlib
+seaborn
+lightgbm
