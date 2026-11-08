@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/Stack-React%20%7C%20FastAPI-2E7D32?style=for-the-badge" alt="Technology stack">
 </p>
 
-<img src="./images/Screenshot%202026-11-08%20at%2018.59.03.png" alt="GeoSense AI soil strength prediction interface" width="92%">
+<img src="./images/geosense-1.png" alt="GeoSense AI soil strength prediction interface" width="92%">
 
 </div>
 
@@ -29,8 +29,8 @@ GeoSense turns complex soil information into practical, understandable insight. 
 <div align="center">
   <table>
     <tr>
-      <td><img src="./images/Screenshot%202026-11-08%20at%2018.59.09.png" alt="GeoSense bearing capacity prediction result" width="100%"></td>
-      <td><img src="./images/Screenshot%202026-11-08%20at%2018.59.12.png" alt="GeoSense construction recommendations" width="100%"></td>
+      <td><img src="./images/geosense-2.png" alt="GeoSense bearing capacity prediction result" width="100%"></td>
+      <td><img src="./images/geosense-3.png" alt="GeoSense construction recommendations" width="100%"></td>
     </tr>
     <tr>
       <td align="center"><strong>AI bearing-capacity prediction</strong></td>
@@ -38,7 +38,7 @@ GeoSense turns complex soil information into practical, understandable insight. 
     </tr>
   </table>
   <br>
-  <img src="./images/Screenshot%202026-11-08%20at%2019.00.49.png" alt="GeoSense Bot geotechnical assistant" width="92%">
+  <img src="./images/geosense-4.png" alt="GeoSense Bot geotechnical assistant" width="92%">
   <br>
   <em>GeoSense Bot provides an interactive geotechnical assistant experience.</em>
 </div>
