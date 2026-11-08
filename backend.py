@@ -132,7 +132,7 @@ async def generate_content(req: SuggestionRequest):
         )
 
         response = client.models.generate_content(
-            model="gemini-3-flash-preview",
+            model="gemini-3.5-flash",
             contents=prompt
         )
         return GenerateResponse(text=response.text)
